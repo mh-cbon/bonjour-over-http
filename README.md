@@ -9,8 +9,11 @@ It provides an API and a binary to install.
 ### POST /publish
 
 Description : Publish a service over bonjour.
+
 Format : `multipart/form-data`
-Data: ```
+
+Data:
+```
   if ('name' in req.body)       options.name = req.body.name
   if ('port' in req.body)       options.port = req.body.port
   if ('type' in req.body)       options.type = req.body.type
@@ -19,7 +22,9 @@ Data: ```
   if ('protocol' in req.body)   options.protocol = req.body.protocol
   if ('txt' in req.body)        options.txt = req.body.txt
 ```
-Response: ```
+
+Response:
+```
 res[id] = {
   id:         publishedServices[id].id,
   name:       publishedServices[id].name,
@@ -37,9 +42,13 @@ res[id] = {
 ### GET /published
 
 Description : List published services from this server.
+
 Format : `-`
+
 Data: `none`
-Response: ```
+
+Response:
+```
 res[id] = {
   id:         publishedServices[id].id,
   name:       publishedServices[id].name,
@@ -57,15 +66,21 @@ res[id] = {
 ### POST /unpublish
 
 Description : unpublish previously published service.
+
 Format : `multipart/form-data`
+
 Data: `req.body.id`
+
 Response: `-`
 
 ### POST /unpublishall
 
 Description : unpublish all previously published services.
+
 Format : `multipart/form-data`
+
 Data: `req.body.id`
+
 Response: `-`
 
 ## Browse services
@@ -73,13 +88,17 @@ Response: `-`
 ### POST /findone
 
 Description : Find a service through bonjour.
+
 Format : `multipart/form-data`
-Data: ```
+
+Data:
+```
   if( 'type' in req.body)     opt.type = req.body.type
   if( 'subtypes' in req.body) opt.type = req.body.subtypes
   if( 'protocol' in req.body) opt.type = req.body.protocol
 ```
-Response: ```
+Response:
+```
 {
   addresses: [],
    name: 'whateverelse',
