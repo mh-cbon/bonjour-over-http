@@ -6,12 +6,12 @@ module.exports = function () {
   var bonjour = require('bonjour')();
 
   var publishedServices = {};
-  var browsers = {};
 
   function getServices() {
     var res = {};
     for(var id in publishedServices) {
       res[id] = {
+        id:         publishedServices[id].id,
         name:       publishedServices[id].name,
         protocol:   publishedServices[id].protocol,
         type:       publishedServices[id].type,
@@ -20,19 +20,10 @@ module.exports = function () {
         fqdn:       publishedServices[id].fqdn,
         subtypes:   publishedServices[id].subtypes,
         txt:        publishedServices[id].txt,
-        published: publishedServices[id].published,
+        published:  publishedServices[id].published,
       }
     }
     return res;
-  }
-
-  function getBrowser(options) {
-    var browserId = new Hashes.MD5().hex(JSON.stringify(options))
-    if (!browsers[browserId]) {
-      browsers[browserId] = bonjour.find(options);
-      debug('new browser %s %j', browserId, options)
-    }
-    return browsers[browserId];
   }
 
   function publish() {
@@ -66,7 +57,7 @@ module.exports = function () {
   }
   function unpublish() {
     return function (req, res, next) {
-      var serviceId = req.query.id;
+      var serviceId = req.body.id;
       if (publishedServices[serviceId]) {
         publishedServices[serviceId].stop(function () {
           debug('unpublished service %s', serviceId)
@@ -79,6 +70,7 @@ module.exports = function () {
   function unpublishAll() {
     return function (req, res, next) {
       bonjour.unpublishAll(function () {
+        publishedServices = {};
         debug('unpublished all services', serviceId)
         res.status(200).send();
       })
@@ -94,33 +86,6 @@ module.exports = function () {
     debug('opt %j', opt)
     return opt
   }
-  function find() {
-    return function (req, res, next) {
-      var browser = getBrowser(reqToOpt (req));
-      var lookup = function (service) {
-        clearTimeout(tout);
-        res.status(200).json(service)
-      };
-      var tout = setTimeout(function () {
-        browser.removeListener('up', lookup)
-        res.status(404).send()
-      }, 8000)
-      browser.once('up', lookup)
-    }
-  }
-  function stop() {
-    return function (req, res, next) {
-      var browserId = req.query.id;
-
-      if (browsers[browserId]) {
-        debug('unpublished browser %s', serviceId)
-        browsers[browserId].stop()
-        delete browsers[browserId];
-      } else {
-        debug('no browser found to unpublish %s', serviceId)
-      }
-    }
-  }
   function findOne() {
     return function (req, res, next) {
       var browser = bonjour.findOne(reqToOpt (req), function (service) {
@@ -132,11 +97,6 @@ module.exports = function () {
       })
     }
   }
-  function browsed() {
-    return function (req, res, next) {
-      res.status(200).json(browsers)
-    }
-  }
 
 
   return {
@@ -145,16 +105,13 @@ module.exports = function () {
       bonjour.destroy()
     },
 
-    // manage services
+    // publish services
     publish:      publish,
     published:    published,
     unpublish:    unpublish,
     unpublishAll: unpublishAll,
 
-    // manage browsers
-    browsed:  browsed,
-    find:     find,
-    findOne:  findOne,
-    stop:     stop
+    // find services
+    findOne:  findOne
   };
 }

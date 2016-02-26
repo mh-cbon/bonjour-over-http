@@ -91,10 +91,7 @@ app.post("/unpublish",    bodyParser(), bonjourHttp.unpublish(config));
 app.post("/unpublishall", bodyParser(), bonjourHttp.unpublishall(config));
 
 // browsers
-app.post("/find",     bodyParser(), bonjourHttp.find(config));
 app.post("/findone",  bodyParser(), bonjourHttp.findOne(config));
-app.get("/browsed",   bonjourHttp.browsed(config));
-app.post("/stop",     bodyParser(), bonjourHttp.stop(config));
 
 
 if ( config.ssl && config.ssl.key && config.ssl.cert ) {
