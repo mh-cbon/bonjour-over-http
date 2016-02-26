@@ -1,0 +1,38 @@
+{
+  "name": "bonjour-over-http",
+  "version": "1.0.0",
+  "description": "Http server to find / announce bonjour services",
+  "main": "index.js",
+  "bin": {
+    "bonjour-over-http": "./bin.js"
+  },
+  "scripts": {
+    "test": "node test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mh-cbon/bonjour-over-http.git"
+  },
+  "keywords": [],
+  "author": "mh-cbon <mh-cbon@users.noreply.github.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mh-cbon/bonjour-over-http/issues"
+  },
+  "homepage": "https://github.com/mh-cbon/bonjour-over-http#readme",
+  "dependencies": {
+    "@maboiteaspam/set-verbosity": "^2.0.3",
+    "@maboiteaspam/show-help": "^3.0.0",
+    "body-parser": "^1.15.0",
+    "bonjour": "^3.2.0",
+    "debug": "^2.2.0",
+    "express": "^4.13.4",
+    "jshashes": "^1.0.5",
+    "minimist": "^1.2.0",
+    "node-uuid": "^1.4.7"
+  },
+  "devDependencies": {
+    "painless": "^0.9.1",
+    "supertest": "^1.2.0"
+  }
+}
