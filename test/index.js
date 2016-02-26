@@ -64,7 +64,6 @@ test('browse a service', function(done) {
 
   // services
   app.post("/publish",     bodyParser, bonjourHttp.publish({}));
-  app.post("/find",        bodyParser, bonjourHttp.find({}));
   app.post("/findone",     bodyParser, bonjourHttp.findOne({}));
 
   var expectedBody = {
