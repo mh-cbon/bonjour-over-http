@@ -79,7 +79,7 @@ Description : unpublish all previously published services.
 
 Format : `multipart/form-data`
 
-Data: `req.body.id`
+Data: `-`
 
 Response: `-`
 
