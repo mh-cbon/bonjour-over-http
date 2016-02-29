@@ -14,13 +14,13 @@ Format : `multipart/form-data`
 
 Data:
 ```
-  if ('name' in req.body)       options.name = req.body.name
-  if ('port' in req.body)       options.port = req.body.port
-  if ('type' in req.body)       options.type = req.body.type
-  if ('host' in req.body)       options.host = req.body.host
-  if ('subtypes' in req.body)   options.subtypes = req.body.subtypes
-  if ('protocol' in req.body)   options.protocol = req.body.protocol
-  if ('txt' in req.body)        options.txt = req.body.txt
+  if ('name' in req.body)       options.name      = req.body.name
+  if ('port' in req.body)       options.port      = req.body.port
+  if ('type' in req.body)       options.type      = req.body.type
+  if ('host' in req.body)       options.host      = req.body.host
+  if ('subtypes' in req.body)   options.subtypes  = req.body.subtypes
+  if ('protocol' in req.body)   options.protocol  = req.body.protocol
+  if ('txt' in req.body)        options.txt       = req.body.txt
 ```
 
 Response:
@@ -93,24 +93,55 @@ Format : `multipart/form-data`
 
 Data:
 ```
-  if( 'type' in req.body)     opt.type = req.body.type
-  if( 'subtypes' in req.body) opt.type = req.body.subtypes
-  if( 'protocol' in req.body) opt.type = req.body.protocol
+if( 'timeout' in req.body)  reqTimeout  = req.body.timeout
+if( 'type' in req.body)     opt.type      = req.body.type
+if( 'subtypes' in req.body) opt.subtypes  = req.body.subtypes
+if( 'protocol' in req.body) opt.protocol  = req.body.protocol
 ```
 Response:
 ```
 {
-  addresses: [],
-   name: 'whateverelse',
-   fqdn: 'whateverelse._someother._tcp.local',
-   host: 'linux.local',
-   port: 8091,
-   type: 'someother',
-   protocol: 'tcp',
-   subtypes: [],
-   rawTxt: { type: 'Buffer', data: [0] },
-   txt: {}
+  addresses:  [],
+  name:       'whateverelse',
+  fqdn:       'whateverelse._someother._tcp.local',
+  host:       'linux.local',
+  port:       8091,
+  type:       'someother',
+  protocol:   'tcp',
+  subtypes:   [],
+  rawTxt:     { type: 'Buffer', data: [0] },
+  txt:        {}
 }
+```
+
+### POST /find
+
+Description : Find services through bonjour.
+
+Format : `multipart/form-data`
+
+Data:
+```
+  if( 'timeout' in req.body)  reqTimeout    = req.body.timeout
+  if( 'type' in req.body)     opt.type      = req.body.type
+  if( 'subtypes' in req.body) opt.subtypes  = req.body.subtypes
+  if( 'protocol' in req.body) opt.protocol  = req.body.protocol
+```
+Response:
+```
+[
+  {
+    name:       service.name,
+    type:       service.type,
+    subtypes:   service.subtypes,
+    protocol:   service.protocol,
+    host:       service.host,
+    port:       service.port,
+    fqdn:       service.fqdn,
+    txt:        service.txt,
+    published:  service.published
+  }
+]
 ```
 
 # Binary

@@ -88,12 +88,13 @@ var app = express();
 
 // services
 app.post("/publish",      bodyParser(), bonjourHttp.publish(config));
-app.get("/published",     bonjourHttp.published(config));
+app.get("/published",                   bonjourHttp.published(config));
 app.post("/unpublish",    bodyParser(), bonjourHttp.unpublish(config));
 app.post("/unpublishall", bodyParser(), bonjourHttp.unpublishall(config));
 
 // browsers
-app.post("/findone",  bodyParser(), bonjourHttp.findOne(config));
+app.post("/findone",      bodyParser(), bonjourHttp.findOne(config));
+app.post("/find",         bodyParser(), bonjourHttp.find(config));
 
 
 if ( config.ssl && config.ssl.key && config.ssl.cert ) {
@@ -109,3 +110,11 @@ if ( config.ssl && config.ssl.key && config.ssl.cert ) {
 var CLEAR = http.createServer( app );
 
 CLEAR.listen(config.lear.port, config.clear.host);
+
+var tearDown = function (then) {
+  CLEAR.close();
+  SSL && SSL.close();
+  bonjourHttp.destroy();
+}
+process.on('beforeExit', tearDown)
+process.on('SIGINT', tearDown)

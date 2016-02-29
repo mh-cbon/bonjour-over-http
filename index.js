@@ -80,21 +80,49 @@ module.exports = function () {
 
   function reqToOpt (req) {
     opt = {}
-    if( 'type' in req.body)     opt.type = req.body.type
-    if( 'subtypes' in req.body) opt.type = req.body.subtypes
-    if( 'protocol' in req.body) opt.type = req.body.protocol
+    if( 'type' in req.body)     opt.type      = req.body.type
+    if( 'subtypes' in req.body) opt.subtypes  = req.body.subtypes
+    if( 'protocol' in req.body) opt.protocol  = req.body.protocol
     debug('opt %j', opt)
     return opt
   }
   function findOne() {
     return function (req, res, next) {
+      var reqTimeout = req.body.timeout || 5000;
+      req.setTimeout(reqTimeout + 100);
       var browser = bonjour.findOne(reqToOpt (req), function (service) {
-          if (browser.services.length) {
+          if (service) {
             res.status(200).json(service)
           } else {
             res.status(404).send()
           }
       })
+    }
+  }
+  function find() {
+    return function (req, res, next) {
+      var browser = bonjour.find(reqToOpt (req));
+      var foundServices = []
+      browser.on('up', function (service) {
+          foundServices.push({
+            name:       service.name,
+            type:       service.type,
+            subtypes:   service.subtypes,
+            protocol:   service.protocol,
+            host:       service.host,
+            port:       service.port,
+            fqdn:       service.fqdn,
+            txt:        service.txt,
+            published:  service.published
+          })
+      })
+      var reqTimeout = req.body.timeout || 5000;
+      req.setTimeout(reqTimeout + 100);
+      setTimeout(funtion () {
+        browser.stop()
+        if (service) res.status(200).json(foundServices)
+        else res.status(404).send()
+      }, reqTimeout)
     }
   }
 
@@ -112,6 +140,7 @@ module.exports = function () {
     unpublishAll: unpublishAll,
 
     // find services
-    findOne:  findOne
+    findOne:  findOne,
+    find:     find
   };
 }
