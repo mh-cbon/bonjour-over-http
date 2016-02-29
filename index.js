@@ -118,7 +118,7 @@ module.exports = function () {
       })
       var reqTimeout = req.body.timeout || 5000;
       req.setTimeout(reqTimeout + 100);
-      setTimeout(funtion () {
+      setTimeout(function () {
         browser.stop()
         if (service) res.status(200).json(foundServices)
         else res.status(404).send()
