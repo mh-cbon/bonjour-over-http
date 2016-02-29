@@ -52,7 +52,7 @@ try{
   "The configuration could not be loaded, please double check the file"
 );
 
-(!config.clear || !config.ssl)
+(!config.clear && !config.ssl)
 && help.print(usage, pkg)
 && help.die(
   "Configuration options are wrong : you must provide one of clear or ssl options"
@@ -87,14 +87,14 @@ var bonjourHttp = require('./index.js')();
 var app = express();
 
 // services
-app.post("/publish",      bodyParser(), bonjourHttp.publish(config));
-app.get("/published",                   bonjourHttp.published(config));
-app.post("/unpublish",    bodyParser(), bonjourHttp.unpublish(config));
-app.post("/unpublishall", bodyParser(), bonjourHttp.unpublishall(config));
+app.post("/publish",      bodyParser, bonjourHttp.publish(config));
+app.get("/published",                 bonjourHttp.published(config));
+app.post("/unpublish",    bodyParser, bonjourHttp.unpublish(config));
+app.post("/unpublishall", bodyParser, bonjourHttp.unpublishAll(config));
 
 // browsers
-app.post("/findone",      bodyParser(), bonjourHttp.findOne(config));
-app.post("/find",         bodyParser(), bonjourHttp.find(config));
+app.post("/findone",      bodyParser, bonjourHttp.findOne(config));
+app.post("/find",         bodyParser, bonjourHttp.find(config));
 
 
 if ( config.ssl && config.ssl.key && config.ssl.cert ) {
@@ -109,7 +109,7 @@ if ( config.ssl && config.ssl.key && config.ssl.cert ) {
 
 var CLEAR = http.createServer( app );
 
-CLEAR.listen(config.lear.port, config.clear.host);
+CLEAR.listen(config.clear.port, config.clear.host);
 
 var tearDown = function (then) {
   CLEAR.close();
