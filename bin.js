@@ -19,11 +19,19 @@ Config
       "host": "a host value to listen for https requests",
       "key": "a path to an SSL key",
       "ca": "a path to the SSL CA file",
-      "cert": "a path to the SSL cert file",
+      "cert": "a path to the SSL cert file"
     },
     "clear": {
       "port": "a number, or null for a random port",
-      "host": "a host value to listen for http requests",
+      "host": "a host value to listen for http requests"
+    },
+    "cors": {
+      "origin": "*",
+      "credentials": "true|false",
+      "methods": ["GET", "PUT", "POST"],
+      "allowedHeaders": ["Content-Type", "Authorization"],
+      "exposedHeaders": ["Content-Range", "X-Content-Range"],
+      "maxAge": 600
     }
   }
 */}
@@ -31,12 +39,15 @@ var pkg   = require('./package.json')
 var argv  = require('minimist')(process.argv.slice(2));
 var help  = require('@maboiteaspam/show-help')(usage, argv.h||argv.help, pkg)
 var debug = require('@maboiteaspam/set-verbosity')(pkg.name, argv.v || argv.verbose);
+var path  = require('path')
 
-const configPath  = argv.config || argv.c || false;
+var configPath  = argv.config || argv.c || false;
 
 (!configPath) && help.print(usage, pkg) && help.die(
   "Wrong invokation"
 );
+
+configPath = path.resolve(path.join(process.cwd(), configPath))
 
 var config = {}
 try{
@@ -51,6 +62,8 @@ try{
 && help.die(
   "The configuration could not be loaded, please double check the file"
 );
+
+console.log("bonjour-over-http config path %s", configPath);
 
 (!config.clear && !config.ssl)
 && help.print(usage, pkg)
@@ -80,11 +93,18 @@ try{
 var http        = require('http');
 var https       = require('https');
 var express     = require('express');
+var cors        = require('cors');
 var bodyParser  = require('body-parser').urlencoded({ extended: false });
 var bonjourHttp = require('./index.js')();
 
 
 var app = express();
+
+config.clear && console.log("bonjour-over-http clear %j", config.clear);
+config.ssl && console.log("bonjour-over-http ssl %j", config.ssl);
+
+config.cors && console.log("bonjour-over-http cors %j", config.cors);
+config.cors && app.use(cors(config.cors));
 
 // services
 app.post("/publish",      bodyParser, bonjourHttp.publish(config));
