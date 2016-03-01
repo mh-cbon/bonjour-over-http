@@ -1,0 +1,11 @@
+{
+  "clear": {
+    "port": 8081,
+    "host": "localhost"
+  },
+  "cors": {
+      "origin": "*",
+      "credentials": "true",
+      "methods": ["GET", "POST"]
+  }
+}

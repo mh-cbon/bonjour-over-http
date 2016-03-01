@@ -1,0 +1,188 @@
+<html>
+<head>
+  <title>Bonjour over http demo</title>
+</head>
+<body>
+  <h1>Announce a service</h1>
+  <div>
+    <form enctype="multipart/form-data" method="POST"
+      name="publish">
+      <input type="text" placeholder="name: human readable" value="demo" name="name" />
+      <br>
+      <input type="text" placeholder="port: 9000" value="9000" name="port" />
+      <br>
+      <input type="text" placeholder="type: http|smtp" value="http" name="type" />
+      <br>
+      <input type="text" placeholder="host: localhost" value="localhost" name="host" />
+      <br>
+      <input type="text" placeholder='subtypes: ["a", "b"]' value="" name="subtypes" />
+      <br>
+      <input type="text" placeholder="protocol: tcp|udp" value="tcp" name="protocol" />
+      <br>
+      <textarea name="TXT" placeholder="TXT"></textarea>
+      <input type="submit" value="Publish" />
+      <pre name="results"></pre>
+    </form>
+    <script>
+      (function () {
+        var publish = document.getElementsByName("publish")[0];
+
+        var name      = publish.querySelector("input[name='name']");
+        var port      = publish.querySelector("input[name='port']");
+        var type      = publish.querySelector("input[name='type']");
+        var host      = publish.querySelector("input[name='host']");
+        var protocol  = publish.querySelector("input[name='protocol']");
+        var subtypes  = publish.querySelector("input[name='subtypes']");
+        var TXT       = publish.querySelector("textarea[name='TXT']");
+        var results   = publish.querySelector("pre[name='results']");
+
+        publish.addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          try{
+            var http = new XMLHttpRequest();
+            var action = 'http://127.0.0.1:8081/publish';
+
+            http.open("POST", action, true);
+
+            var params = "";
+            params += "&name=" + name.value;
+            params += "&port=" + port.value;
+            params += "&type=" + type.value;
+            params += "&host=" + host.value;
+            params += "&protocol=" + protocol.value;
+            params += "&subtypes=" + (subtypes.value && JSON.parse(subtypes.value));
+            params += "&txt=" + TXT.value;
+
+            http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            http.setRequestHeader("Content-length", params.length);
+            http.setRequestHeader("Connection", "close");
+
+            http.onreadystatechange = function() {
+              if(http.readyState == 4) {
+                results.innerHTML = JSON.stringify(
+                  JSON.parse(http.responseText), null, 4
+                )
+              }
+            };
+
+            console.log(params);
+            http.send(params);
+
+          }catch(ex){
+            results.innerHTML = "" + ex
+          }
+        })
+      })();
+    </script>
+  </div>
+  <h1>Find any services</h1>
+  <div>
+    <form enctype="multipart/form-data" method="POST"
+      name="lookup_any">
+      <input type="text" placeholder="timeout: 0 to long value" value="5000" name="timeout" />
+      <br>
+      <input type="text" placeholder="type: http|smtp" value="http" name="type" />
+      <br>
+      <input type="text" placeholder="protocol: tcp|udp" value="" name="protocol" />
+      <br>
+      <input type="text" placeholder='subtypes: ["a", "b"]' value="" name="subtypes" />
+      <input type="submit" value="Lookup" />
+      <pre name="results"></pre>
+    </form>
+    <script>
+      (function () {
+        var lookup_any = document.getElementsByName("lookup_any")[0];
+
+        var type      = lookup_any.querySelector("input[name='type']");
+        var protocol  = lookup_any.querySelector("input[name='protocol']");
+        var subtypes  = lookup_any.querySelector("input[name='subtypes']");
+        var timeout   = lookup_any.querySelector("input[name='timeout']");
+        var results   = lookup_any.querySelector("pre[name='results']");
+
+        lookup_any.addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          var http = new XMLHttpRequest();
+          var action = 'http://127.0.0.1:8081/find';
+
+          http.open("POST", action, true);
+
+          var params = "";
+          params += "&timeout=" + timeout.value;
+          params += "&type=" + type.value;
+          params += "&protocol=" + protocol.value;
+          params += "&subtypes=" + (subtypes.value && JSON.parse(subtypes.value));
+
+          http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+          http.setRequestHeader("Content-length", params.length);
+          http.setRequestHeader("Connection", "close");
+
+          http.onreadystatechange = function() {
+            if(http.readyState == 4) {
+              results.innerHTML = JSON.stringify(
+                JSON.parse(http.responseText), null, 4
+              )
+            }
+          }
+          http.send(params);
+        })
+      })();
+    </script>
+  </div>
+  <h1>Find one service</h1>
+  <div>
+    <form enctype="multipart/form-data" method="POST"
+      name="lookup_one">
+      <input type="text" placeholder="timeout: 0 to long value" value="5000" name="timeout" />
+      <br>
+      <input type="text" placeholder="type: http|smtp" value="http" name="type" />
+      <br>
+      <input type="text" placeholder="protocol: tcp|udp" value="" name="protocol" />
+      <br>
+      <input type="text" placeholder='subtypes: ["a", "b"]' value="" name="subtypes" />
+      <input type="submit" value="Lookup" />
+      <pre name="results"></pre>
+    </form>
+    <script>
+      (function () {
+        var lookup_one = document.getElementsByName("lookup_one")[0];
+
+        var type      = lookup_one.querySelector("input[name='type']");
+        var protocol  = lookup_one.querySelector("input[name='protocol']");
+        var subtypes  = lookup_one.querySelector("input[name='subtypes']");
+        var timeout   = lookup_one.querySelector("input[name='timeout']");
+        var results   = lookup_one.querySelector("pre[name='results']");
+
+        lookup_one.addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          var http = new XMLHttpRequest();
+          var action = 'http://127.0.0.1:8081/findone';
+
+          http.open("POST", action, true);
+
+          var params = "";
+          params += "&timeout=" + timeout.value;
+          params += "&type=" + type.value;
+          params += "&protocol=" + protocol.value;
+          params += "&subtypes=" + (subtypes.value && JSON.parse(subtypes.value));
+
+          http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+          http.setRequestHeader("Content-length", params.length);
+          http.setRequestHeader("Connection", "close");
+
+          http.onreadystatechange = function() {
+            if(http.readyState == 4) {
+              results.innerHTML = JSON.stringify(
+                JSON.parse(http.responseText), null, 4
+              )
+            }
+          }
+          http.send(params);
+        })
+      })();
+    </script>
+  </div>
+</body>
+</html>
