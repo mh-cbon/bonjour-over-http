@@ -26,8 +26,17 @@ module.exports = function () {
     return res;
   }
 
+  function serviceExists(options) {
+    return !!publishedServices[serviceOptToId(options)];
+  }
+
+  function serviceOptToId(options) {
+    return new Hashes.MD5().hex(options.host + ':' + options.port);
+  }
+
   function publish() {
     return function (req, res, next) {
+      debug('publish: body %j', req.body)
 
       var options = {}
       if ('name' in req.body)       options.name = req.body.name
@@ -38,15 +47,16 @@ module.exports = function () {
       if ('protocol' in req.body)   options.protocol = req.body.protocol
       if ('txt' in req.body)        options.txt = req.body.txt
 
-      var serviceId = new Hashes.MD5().hex(JSON.stringify(options))
-      if (!publishedServices[serviceId]) {
+      var serviceId = serviceOptToId(options)
+      if (!serviceExists(options)) {
         debug('new service %s %j', serviceId, options)
         publishedServices[serviceId] = bonjour.publish(options)
         publishedServices[serviceId].once('up', function () {
           res.status(200).json(getServices())
         })
       } else {
-        res.status(200).json(getServices())
+        debug('service already published %s %j', serviceId, options)
+        res.status(500).json(getServices())
       }
     }
   }
@@ -63,8 +73,9 @@ module.exports = function () {
           debug('unpublished service %s', serviceId)
           res.status(200).send()
         })
-        delete publishedServices[serviceId];
+        return delete publishedServices[serviceId];
       }
+      debug('cannot unpublish: service not found %s', serviceId)
     }
   }
   function unpublishAll() {
@@ -88,14 +99,14 @@ module.exports = function () {
   }
   function findOne() {
     return function (req, res, next) {
-      var reqTimeout = req.body.timeout || 5000;
+      var reqTimeout = parseInt(req.body.timeout) || 5000;
       req.setTimeout(reqTimeout + 100);
       var browser = bonjour.findOne(reqToOpt (req), function (service) {
-          if (service) {
-            res.status(200).json(service)
-          } else {
-            res.status(404).send()
-          }
+        if (service) {
+          res.status(200).json(service)
+        } else {
+          res.status(404).send()
+        }
       })
     }
   }
@@ -116,11 +127,11 @@ module.exports = function () {
             published:  service.published
           })
       })
-      var reqTimeout = req.body.timeout || 5000;
+      var reqTimeout = parseInt(req.body.timeout) || 5000;
       req.setTimeout(reqTimeout + 100);
       setTimeout(function () {
         browser.stop()
-        if (service) res.status(200).json(foundServices)
+        if (foundServices.length) res.status(200).json(foundServices)
         else res.status(404).send()
       }, reqTimeout)
     }
