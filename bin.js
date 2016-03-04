@@ -42,52 +42,59 @@ var debug = require('@maboiteaspam/set-verbosity')(pkg.name, argv.v || argv.verb
 var path  = require('path')
 
 var configPath  = argv.config || argv.c || false;
-
-(!configPath) && help.print(usage, pkg) && help.die(
-  "Wrong invokation"
-);
-
-configPath = path.resolve(path.join(process.cwd(), configPath))
-
 var config = {}
-try{
-  config = require(configPath)
-}catch(ex){
-  help.die(
-    "Config path must exist and be a valid JSON file.\n" + ex
+
+if (configPath) {
+  configPath = path.resolve(path.join(process.cwd(), configPath))
+
+  try{
+    config = require(configPath)
+  }catch(ex){
+    help.print(usage, pkg) && help.die(
+      "Config path must exist and be a valid JSON file.\n" + ex
+    );
+  }
+
+  (!config) && help.print(usage, pkg)
+  && help.die(
+    "The configuration could not be loaded, please double check the file"
   );
+} else {
+  config = {
+    clear: {
+      port: 8090,
+      host: '127.0.0.1'
+    },
+    cors: {
+      "origin": "*",
+      "methods": ["GET", "PUT", "POST"],
+      "maxAge": 600
+    }
+  }
 }
 
-(!config) && help.print(usage, pkg)
-&& help.die(
-  "The configuration could not be loaded, please double check the file"
-);
-
 console.log("bonjour-over-http config path %s", configPath);
+console.log("bonjour-over-http config %j", config);
 
-(!config.clear && !config.ssl)
-&& help.print(usage, pkg)
-&& help.die(
-  "Configuration options are wrong : you must provide one of clear or ssl options"
-);
+if (config.ssl) {
+  (config.ssl.key && !fs.existsSync(config.ssl.key))
+  && help.print(usage, pkg)
+  && help.die(
+    "Configuration options are wrong : SSL key file must exist"
+  );
 
-(config.ssl && !fs.existsSync(config.ssl.key))
-&& help.print(usage, pkg)
-&& help.die(
-  "Configuration options are wrong : SSL key file must exist"
-);
+  (config.ssl.ca && !fs.existsSync(config.ssl.ca))
+  && help.print(usage, pkg)
+  && help.die(
+    "Configuration options are wrong : SSL ca file must exist"
+  );
 
-(config.ssl && config.ssl.ca && !fs.existsSync(config.ssl.ca))
-&& help.print(usage, pkg)
-&& help.die(
-  "Configuration options are wrong : SSL ca file must exist"
-);
-
-(config.ssl && !fs.existsSync(config.ssl.cert))
-&& help.print(usage, pkg)
-&& help.die(
-  "Configuration options are wrong : SSL cert file must exist"
-);
+  (config.ssl.cert && !fs.existsSync(config.ssl.cert))
+  && help.print(usage, pkg)
+  && help.die(
+    "Configuration options are wrong : SSL cert file must exist"
+  );
+}
 
 
 var http        = require('http');
