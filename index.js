@@ -100,6 +100,7 @@ module.exports = function () {
   function findOne() {
     return function (req, res, next) {
       var reqTimeout = parseInt(req.body.timeout) || 5000;
+      debug('timeout %s', reqTimeout)
       req.setTimeout(reqTimeout + 100);
       var browser = bonjour.findOne(reqToOpt (req), function (service) {
         if (service) {
@@ -126,11 +127,13 @@ module.exports = function () {
             txt:        service.txt,
             published:  service.published
           })
-      })
+      });
       var reqTimeout = parseInt(req.body.timeout) || 5000;
+      debug('timeout %s', reqTimeout);
       req.setTimeout(reqTimeout + 100);
       setTimeout(function () {
         browser.stop()
+        debug('services %j', foundServices);
         if (foundServices.length) res.status(200).json(foundServices)
         else res.status(404).send()
       }, reqTimeout)

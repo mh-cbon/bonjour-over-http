@@ -28,7 +28,7 @@ Config
     },
     "cors": {
       "origin": "*",
-      "credentials": "true|false",
+      "credentials": true|false,
       "methods": ["GET", "PUT", "POST"],
       "allowedHeaders": ["Content-Type", "Authorization"],
       "exposedHeaders": ["Content-Range", "X-Content-Range"],
@@ -67,7 +67,8 @@ if (configPath) {
       host: '127.0.0.1'
     },
     cors: {
-      "origin": "*",
+      "origin": true,
+      "credentials": true,
       "methods": ["GET", "PUT", "POST"],
       "maxAge": 600
     }
