@@ -1,6 +1,6 @@
 {
   "name": "@mh-cbon/bonjour-over-http",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Http server to find / announce bonjour services",
   "main": "index.js",
   "bin": {
@@ -21,7 +21,8 @@
     "url": "git+https://github.com/mh-cbon/bonjour-over-http.git"
   },
   "keywords": [
-    "bonjour", "http"
+    "bonjour",
+    "http"
   ],
   "author": "mh-cbon <mh-cbon@users.noreply.github.com>",
   "license": "MIT",
