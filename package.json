@@ -1,5 +1,5 @@
 {
-  "name": "bonjour-over-http",
+  "name": "@mh-cbon/bonjour-over-http",
   "version": "1.0.0",
   "description": "Http server to find / announce bonjour services",
   "main": "index.js",
@@ -7,13 +7,22 @@
     "bonjour-over-http": "./bin.js"
   },
   "scripts": {
-    "test": "node test/index.js"
+    "test": "node test/index.js",
+    "patch": "npm version patch -m \"patch %s\"",
+    "minor": "npm version minor -m \"minor %s\"",
+    "major": "npm version major -m \"major %s\"",
+    "preversion": "echo \"npm test: not defined\"",
+    "version": "echo \"npm run build: not defined\"",
+    "postversion": "git push && git push --tags && npm run public",
+    "public": "npm publish --access=public"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mh-cbon/bonjour-over-http.git"
   },
-  "keywords": [],
+  "keywords": [
+    "bonjour", "http"
+  ],
   "author": "mh-cbon <mh-cbon@users.noreply.github.com>",
   "license": "MIT",
   "bugs": {
