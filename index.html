@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Bonjour-over-http by mh-cbon</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Bonjour-over-http</h1>
+      <h2 class="project-tagline">Http server to find / announce bonjour services</h2>
+      <a href="https://github.com/mh-cbon/bonjour-over-http" class="btn">View on GitHub</a>
+      <a href="https://github.com/mh-cbon/bonjour-over-http/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/mh-cbon/bonjour-over-http/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="bonjour-over-http" class="anchor" href="#bonjour-over-http" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>bonjour-over-http</h1>
+
+<p>Http server to find / announce bonjour services.</p>
+
+<p>It provides an API and a binary to install.</p>
+
+<h1>
+<a id="api" class="anchor" href="#api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>API</h1>
+
+<h2>
+<a id="publish-services" class="anchor" href="#publish-services" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Publish services</h2>
+
+<h3>
+<a id="post-publish" class="anchor" href="#post-publish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST /publish</h3>
+
+<p>Description : Publish a service over bonjour.</p>
+
+<p>Format : <code>multipart/form-data</code></p>
+
+<p>Data:</p>
+
+<pre><code>  if ('name' in req.body)       options.name      = req.body.name
+  if ('port' in req.body)       options.port      = req.body.port
+  if ('type' in req.body)       options.type      = req.body.type
+  if ('host' in req.body)       options.host      = req.body.host
+  if ('subtypes' in req.body)   options.subtypes  = req.body.subtypes
+  if ('protocol' in req.body)   options.protocol  = req.body.protocol
+  if ('txt' in req.body)        options.txt       = req.body.txt
+</code></pre>
+
+<p>Response:</p>
+
+<pre><code>res[id] = {
+  id:         publishedServices[id].id,
+  name:       publishedServices[id].name,
+  protocol:   publishedServices[id].protocol,
+  type:       publishedServices[id].type,
+  host:       publishedServices[id].host,
+  port:       publishedServices[id].port,
+  fqdn:       publishedServices[id].fqdn,
+  subtypes:   publishedServices[id].subtypes,
+  txt:        publishedServices[id].txt,
+  published:  publishedServices[id].published,
+}
+</code></pre>
+
+<h3>
+<a id="get-published" class="anchor" href="#get-published" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GET /published</h3>
+
+<p>Description : List published services from this server.</p>
+
+<p>Format : <code>-</code></p>
+
+<p>Data: <code>none</code></p>
+
+<p>Response:</p>
+
+<pre><code>res[id] = {
+  id:         publishedServices[id].id,
+  name:       publishedServices[id].name,
+  protocol:   publishedServices[id].protocol,
+  type:       publishedServices[id].type,
+  host:       publishedServices[id].host,
+  port:       publishedServices[id].port,
+  fqdn:       publishedServices[id].fqdn,
+  subtypes:   publishedServices[id].subtypes,
+  txt:        publishedServices[id].txt,
+  published:  publishedServices[id].published,
+}
+</code></pre>
+
+<h3>
+<a id="post-unpublish" class="anchor" href="#post-unpublish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST /unpublish</h3>
+
+<p>Description : unpublish previously published service.</p>
+
+<p>Format : <code>multipart/form-data</code></p>
+
+<p>Data: <code>req.body.id</code></p>
+
+<p>Response: <code>-</code></p>
+
+<h3>
+<a id="post-unpublishall" class="anchor" href="#post-unpublishall" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST /unpublishall</h3>
+
+<p>Description : unpublish all previously published services.</p>
+
+<p>Format : <code>multipart/form-data</code></p>
+
+<p>Data: <code>-</code></p>
+
+<p>Response: <code>-</code></p>
+
+<h2>
+<a id="browse-services" class="anchor" href="#browse-services" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Browse services</h2>
+
+<h3>
+<a id="post-findone" class="anchor" href="#post-findone" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST /findone</h3>
+
+<p>Description : Find a service through bonjour.</p>
+
+<p>Format : <code>multipart/form-data</code></p>
+
+<p>Data:</p>
+
+<pre><code>if( 'timeout' in req.body)  reqTimeout  = req.body.timeout
+if( 'type' in req.body)     opt.type      = req.body.type
+if( 'subtypes' in req.body) opt.subtypes  = req.body.subtypes
+if( 'protocol' in req.body) opt.protocol  = req.body.protocol
+</code></pre>
+
+<p>Response:</p>
+
+<pre><code>{
+  addresses:  [],
+  name:       'whateverelse',
+  fqdn:       'whateverelse._someother._tcp.local',
+  host:       'linux.local',
+  port:       8091,
+  type:       'someother',
+  protocol:   'tcp',
+  subtypes:   [],
+  rawTxt:     { type: 'Buffer', data: [0] },
+  txt:        {}
+}
+</code></pre>
+
+<h3>
+<a id="post-find" class="anchor" href="#post-find" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST /find</h3>
+
+<p>Description : Find services through bonjour.</p>
+
+<p>Format : <code>multipart/form-data</code></p>
+
+<p>Data:</p>
+
+<pre><code>  if( 'timeout' in req.body)  reqTimeout    = req.body.timeout
+  if( 'type' in req.body)     opt.type      = req.body.type
+  if( 'subtypes' in req.body) opt.subtypes  = req.body.subtypes
+  if( 'protocol' in req.body) opt.protocol  = req.body.protocol
+</code></pre>
+
+<p>Response:</p>
+
+<pre><code>[
+  {
+    name:       service.name,
+    type:       service.type,
+    subtypes:   service.subtypes,
+    protocol:   service.protocol,
+    host:       service.host,
+    port:       service.port,
+    fqdn:       service.fqdn,
+    txt:        service.txt,
+    published:  service.published
+  }
+]
+</code></pre>
+
+<h1>
+<a id="binary" class="anchor" href="#binary" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Binary</h1>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<pre><code>bonjour-over-http 1.0.0
+  Http server to find / announce bonjour services
+
+Usage
+  bonjour-over-http --config=/path/to/config.json
+
+Options
+  --config  | -c   Path to the JSON configuration file
+  --verbose | -v   Enable verbosity pass in the module list to debug.
+
+Config
+  The configuration is a plain json object describing several options to
+  apply to your instance of bonjour-over-http.
+
+  {
+    "ssl": {
+      "port": "a number, or null for a random port",
+      "host": "a host value to listen for https requests",
+      "key": "a path to an SSL key",
+      "ca": "a path to the SSL CA file",
+      "cert": "a path to the SSL cert file"
+    },
+    "clear": {
+      "port": "a number, or null for a random port",
+      "host": "a host value to listen for http requests"
+    },
+    "cors": {
+      "origin": "*",
+      "credentials": "true|false",
+      "methods": ["GET", "PUT", "POST"],
+      "allowedHeaders": ["Content-Type", "Authorization"],
+      "exposedHeaders": ["Content-Range", "X-Content-Range"],
+      "maxAge": 600
+    }
+  }
+</code></pre>
+
+<h1>
+<a id="todos" class="anchor" href="#todos" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Todos</h1>
+
+<ul>
+<li>add support for json body request (config switch + implementation + demo)</li>
+</ul>
+
+<h1>
+<a id="read-more" class="anchor" href="#read-more" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Read more</h1>
+
+<ul>
+<li><a href="https://github.com/watson/bonjour">https://github.com/watson/bonjour</a></li>
+<li><a href="http://expressjs.com/en/api.html">http://expressjs.com/en/api.html</a></li>
+</ul>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/mh-cbon/bonjour-over-http">Bonjour-over-http</a> is maintained by <a href="https://github.com/mh-cbon">mh-cbon</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
